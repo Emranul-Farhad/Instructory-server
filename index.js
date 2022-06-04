@@ -100,7 +100,28 @@ async function run() {
           res.send(coursestore)
         })
 
+        // user profile get from client sides
+         app.put('/profiles/:email' , async(req,res)=> {
+           const info = req.body
+           const email = req.params.email;
+           const filter = {email : email}
+           const options = { upsert: true };
+           const updateDoc = {
+            $set: info
+          };
+          const userinfostore = await userscollection.updateOne(filter, updateDoc, options)
+          res.send(userinfostore)
+         } )
      
+        // user info get user wise
+        app.get('/userdata', async(req,res)=> {
+          const email = req.query.email;
+          console.log(email);
+          const query = {email: email}
+          console.log(query);
+          const userdetails = await userscollection.findOne(query)
+          res.send(userdetails)
+        })
 
 
 
