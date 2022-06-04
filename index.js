@@ -13,7 +13,7 @@ app.use(express.json())
 
 
 //  mongodb cluster connect
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_KEY}@cluster0.mstyq.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -122,6 +122,16 @@ async function run() {
           const userdetails = await userscollection.findOne(query)
           res.send(userdetails)
         })
+
+        // delete courses 
+         app.delete('/delete/:id' , async(req,res)=> {
+           const id = req.params.id
+           const filter = {_id: ObjectId(id)}
+           const course = await collection.deleteOne(filter)
+           res.send(course)
+         } )
+ 
+
 
 
 
