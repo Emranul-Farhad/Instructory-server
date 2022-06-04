@@ -3,7 +3,7 @@ const app = express()
 const port = process.env.PORT || 8000
 var cors = require('cors')
 require('dotenv').config()
-
+var jwt = require('jsonwebtoken');
 
 
 // cors /json midel wire
@@ -16,6 +16,31 @@ app.use(express.json())
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_KEY}@cluster0.mstyq.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
+// const verifyjwt
+
+ const verifyjwt = (req, res,next) => {
+  const auth = req.headers.authorization
+  console.log(auth);
+  if(!auth){
+    return res.status(403).send({ message : "unauthorized access" })
+  }
+  const token = auth.split(' ')[1]
+  console.log(token);
+  jwt.verify(token, process.env.JWT_KEY, function (err, decoded) {
+    if (err) {
+        return res.status(401).send({ message: "forbidden access" })
+    }
+    console.log("decoded", decoded);
+    req.decoded = decoded
+}) 
+  
+
+   console.log("sdfdf");
+   next()
+ }
+
 
 
 async function run() {
@@ -45,7 +70,8 @@ async function run() {
             $set: user
           };
         const update = await userscollection.updateOne(filter, updateDoc, options)
-        res.send(update)
+        const token = jwt.sign({ email: email}, process.env.JWT_KEY,{ expiresIn: '30d' });
+        res.send({update, token })
     })
 
      // load all user who are sign in our page
@@ -67,7 +93,7 @@ async function run() {
         } )
 
         // course get from client site store in db
-        app.post('/courseend', async(req,res)=> {
+        app.post('/courseend', verifyjwt,  async(req,res)=> {
           const course = req.body
           console.log(course);
           const coursestore = await collection.insertOne(course)
