@@ -26,6 +26,7 @@ async function run() {
        const userscollection = client.db("Alluser").collection("users");
 
 
+
     //  course get from db
     app.get('/courses', async(req,res)=> {
         const coursecollection = await collection.find().toArray()
@@ -47,35 +48,33 @@ async function run() {
         res.send(update)
     })
 
+     // load all user who are sign in our page
+     app.get('/users' , async(req,res) =>{
+      const result = await userscollection.find().toArray()
+      res.send(result)
+   }) 
 
     //  make user admin
     app.put('/users/admin/:email' , async(req,res)=>{
         const email = req.params.email ;
-        const requester = req.params.email;
-        const seacrh = await userscollection.findOne({email: requester }) 
-        if(seacrh.role === 'admin'){
             const filter = {email: email}
             const updateDoc = {
                 $set: {role : "admin"}
               };
               const makeadmin = await userscollection.updateOne(filter, updateDoc)
               res.send(makeadmin)
-        }
-        else{
-            res.status(401).send({meassage : "cannot make admin" })
-        }
        
-    } )
+        } )
 
+        // course get from client site store in db
+        app.post('/courseend', async(req,res)=> {
+          const course = req.body
+          console.log(course);
+          const coursestore = await collection.insertOne(course)
+          res.send(coursestore)
+        })
 
-
-
-
-      // load all user who are sign in our page
-      app.get('/users' , async(req,res) =>{
-          const result = await userscollection.find().toArray()
-          res.send(result)
-      }) 
+     
 
 
 
