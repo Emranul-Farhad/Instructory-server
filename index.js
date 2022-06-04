@@ -57,8 +57,13 @@ async function run() {
         const coursecollection = await collection.find().toArray()
         res.send(coursecollection)
     })
-    // courrse get end here
+  
 
+    // courses pagenation api making here
+     app.get('/counts', async(req,res)=> {
+       const coursescounts  = await collection.estimatedDocumentCount()
+       res.send({coursescounts})
+     } )
 
     //  user collection make 
     app.put('/usercollection/:email',async(req,res)=> {
@@ -74,6 +79,7 @@ async function run() {
         res.send({update, token })
     })
 
+  
      // load all user who are sign in our page
      app.get('/users' , async(req,res) =>{
       const result = await userscollection.find().toArray()
@@ -138,20 +144,23 @@ async function run() {
  
 
         // get user review
-         app.put('/review/:id' ,async(req,res) => {
-           const id = req.params.id;
-           const star = req.body
-           const filter = {_id: ObjectId(id)}
-           const options = { upsert: true };
-           const updateDoc = {
-            $set: star
-          };
-          const coursestar = await collection.updateOne(filter, updateDoc, options)
-          res.send(coursestar)
-         }) 
+        //  app.put('/review/:id' ,async(req,res) => {
+        //    const id = req.params.id;
+        //    console.log(id);
+        //    const star = req.body
+        //    console.log(star);
+        //    const filter = {_id: ObjectId(id)}
+        //    const options = { upsert: true };
+        //    const updateDoc = {
+        //     $set: star
+        //   };
+        //   const coursestar = await collection.updateOne(filter, updateDoc, options)
+        //   res.send(coursestar)
+        //  }) 
 
 
-
+        // id wisecourse get
+        // app.get('/singelcourse' )
 
 
 
