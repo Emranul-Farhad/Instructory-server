@@ -107,7 +107,7 @@ async function run() {
           res.send(coursestore)
         })
 
-        // user profile get from client sides
+        // user profile get from client side user profile section
          app.put('/profiles/:email' , async(req,res)=> {
            const info = req.body
            const email = req.params.email;
@@ -136,6 +136,22 @@ async function run() {
            res.send(course)
          } )
  
+
+        // get user review
+         app.put('/review/:id' ,async(req,res) => {
+           const id = req.params.id;
+           const star = req.body
+           const filter = {_id: ObjectId(id)}
+           const options = { upsert: true };
+           const updateDoc = {
+            $set: star
+          };
+          const coursestar = await collection.updateOne(filter, updateDoc, options)
+          res.send(coursestar)
+         }) 
+
+
+
 
 
 
