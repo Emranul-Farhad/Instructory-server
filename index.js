@@ -81,21 +81,30 @@ async function run() {
    }) 
 
     //  make user admin
-    app.put('/users/admin/:email' , async(req,res)=>{
-        const email = req.params.email ;
-            const filter = {email: email}
-            const updateDoc = {
-                $set: {role : "admin"}
-              };
-              const makeadmin = await userscollection.updateOne(filter, updateDoc)
-              res.send(makeadmin)
+    app.put('/users/admin/:email' , verifyjwt, async(req,res)=>{
+        const email = req.params.email;
+        console.log(email);
+        const requester = req.decoded.email;
+        console.log(requester);
+        const requesteremail = await userscollection.findOne({email : requester})
+        if( requesteremail.role === "admin"){
+          const filter = {email: email}
+          const updateDoc = {
+              $set: {role : "admin"}
+            };
+            const makeadmin = await userscollection.updateOne(filter, updateDoc)
+            res.send(makeadmin)
+        }
+        else{
+          res.status(403).send({message : "unauthorized"})
+        }
+            
        
         } )
 
         // course get from client site store in db
         app.post('/courseend', verifyjwt,  async(req,res)=> {
           const course = req.body
-          console.log(course);
           const coursestore = await collection.insertOne(course)
           res.send(coursestore)
         })
@@ -113,12 +122,10 @@ async function run() {
           res.send(userinfostore)
          } )
      
-        // user info get user wise
+        // user info get/show client side user wise
         app.get('/userdata', async(req,res)=> {
           const email = req.query.email;
-          console.log(email);
           const query = {email: email}
-          console.log(query);
           const userdetails = await userscollection.findOne(query)
           res.send(userdetails)
         })
