@@ -80,12 +80,10 @@ async function run() {
       res.send(result)
    }) 
 
-    //  make user admin
+    //  make user admin / a admin can make admin only
     app.put('/users/admin/:email' , verifyjwt, async(req,res)=>{
-        const email = req.params.email;
-        console.log(email);
+        const email = req.params.email;  
         const requester = req.decoded.email;
-        console.log(requester);
         const requesteremail = await userscollection.findOne({email : requester})
         if( requesteremail.role === "admin"){
           const filter = {email: email}
