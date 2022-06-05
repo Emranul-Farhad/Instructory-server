@@ -205,12 +205,24 @@ async function run() {
   //  courses send in db checkout page api
       app.post('/checkout' , async(req,res)=> {
         const course = req.body ;
-        console.log(course);
         const storeindb = await courses.insertOne(course)
         res.send(storeindb)
       })
 
-
+      // user wise courses/ ordeer user wise my course section
+       app.get('/mycourses', (req,res)=> {
+         const email = req.query.email ;
+         const decoded = req.decoded.email;
+         console.log(email , decoded);
+         if(email === decoded){
+           const query = {email : email}
+           const mycourse = await courses.find(query).toArray()
+           res.send(mycourse)
+         }
+         else{
+           res.status(403).send({message : "unauthorizes access"})
+         }
+       } )
 
 
 
