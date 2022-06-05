@@ -49,6 +49,7 @@ async function run() {
     await client.connect()
     const collection = client.db("instructor").collection("course");
     const userscollection = client.db("Alluser").collection("users");
+    const courses = client.db("Courses").collection("course");
 
 
 
@@ -195,11 +196,21 @@ async function run() {
     // id wisecourse get
     app.get('/singelcourse/:id', async(req,res)=> {
       const id = req.params.id ;
-      console.log(id);
       const query = {_id:ObjectId(id)}
       const course = await collection.findOne(query)
       res.send(course)
     } )
+
+
+  //  courses send in db checkout page api
+      app.post('/checkout' , async(req,res)=> {
+        const course = req.body ;
+        console.log(course);
+        const storeindb = await courses.insertOne(course)
+        res.send(storeindb)
+      })
+
+
 
 
 
