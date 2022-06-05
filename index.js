@@ -70,7 +70,7 @@ async function run() {
     //   }
     // })
 
-
+    // courses get from db and page size wise data show 
     app.get('/courses', async (req, res) => {
       const query = {}
       const cursor = collection.find(query)
@@ -193,7 +193,13 @@ async function run() {
 
 
     // id wisecourse get
-    // app.get('/singelcourse' )
+    app.get('/singelcourse/:id', async(req,res)=> {
+      const id = req.params.id ;
+      console.log(id);
+      const query = {_id:ObjectId(id)}
+      const course = await collection.findOne(query)
+      res.send(course)
+    } )
 
 
 
