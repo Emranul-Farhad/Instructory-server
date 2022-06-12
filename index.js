@@ -242,7 +242,11 @@ async function run() {
         res.send(storereview)
       } )
   
-
+  //   review getting api
+      app.get('/review', async(req,res)=> {
+        const reviews = await Review.find().toArray()
+        res.send(reviews)
+      } )
 
 
 
