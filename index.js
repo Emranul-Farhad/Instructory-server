@@ -238,7 +238,6 @@ async function run() {
     //  review api making
       app.post('/review', async(req,res)=> {
         const review = req.body;
-        console.log(review);
         const storereview = await Review.insertOne(review)
         res.send(storereview)
       } )
