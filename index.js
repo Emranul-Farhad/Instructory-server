@@ -22,7 +22,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 const verifyjwt = (req, res, next) => {
   const auth = req.headers.authorization
-  console.log(auth);
   if (!auth) {
     return res.status(403).send({ message: "unauthorized access" })
   }
@@ -50,6 +49,7 @@ async function run() {
     const collection = client.db("instructor").collection("course");
     const userscollection = client.db("Alluser").collection("users");
     const courses = client.db("Courses").collection("course");
+    const Review = client.db("Review").collection("Reviews");
 
 
 
@@ -109,7 +109,8 @@ async function run() {
         $set: user
       };
       const update = await userscollection.updateOne(filter, updateDoc, options)
-      const token = jwt.sign({ email: email }, process.env.JWT_KEY, { expiresIn: '30d' });
+      const token = jwt.sign({ email: email }, process.env.JWT_KEY, 
+        { expiresIn: '30d' });
       res.send({ update, token })
     })
 
@@ -209,20 +210,39 @@ async function run() {
         res.send(storeindb)
       })
 
+      
       // user wise courses/ ordeer user wise my course section
-       app.get('/mycourses', (req,res)=> {
+       app.get('/mycourse', verifyjwt, async(req,res)=> {
          const email = req.query.email ;
+         console.log(email);
          const decoded = req.decoded.email;
-         console.log(email , decoded);
+      
+       
          if(email === decoded){
            const query = {email : email}
+       
            const mycourse = await courses.find(query).toArray()
            res.send(mycourse)
          }
          else{
-           res.status(403).send({message : "unauthorizes access"})
+           return res.status(403).send({message : "unauthorizes access"})
          }
        } )
+
+
+       app.get('/mycourse' ,  async(req,res)=> {
+         const course = await courses.find().toArray()
+         res.send(course)
+       })
+
+    //  review api making
+      app.post('/review', async(req,res)=> {
+        const review = req.body;
+        console.log(review);
+        const storereview = await Review.insertOne(review)
+        res.send(storereview)
+      } )
+  
 
 
 
