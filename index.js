@@ -36,7 +36,7 @@ const verifyjwt = (req, res, next) => {
   })
 
 
-  console.log("sdfdf");
+  console.log("verify jwt");
   next()
 }
 
@@ -211,7 +211,7 @@ async function run() {
       })
 
       
-      // user wise courses/ ordeer user wise my course section
+      // user wise courses/ ordeer user wise my course section 
        app.get('/mycourse', verifyjwt, async(req,res)=> {
          const email = req.query.email ;
          console.log(email);
@@ -230,8 +230,10 @@ async function run() {
        } )
 
 
-       app.get('/mycourse' ,  async(req,res)=> {
+      //  get all order api
+       app.get('/orders' ,  async(req,res)=> {
          const course = await courses.find().toArray()
+        //  console.log(course , "course")
          res.send(course)
        })
 
@@ -247,6 +249,39 @@ async function run() {
         const reviews = await Review.find().toArray()
         res.send(reviews)
       } )
+
+
+    // admin api opnly admin can acces this api's components
+     app.get('/admin/:email' , async(req,res) => {
+        const email = req.params.email   
+        const emailchek = await userscollection.findOne({email : email})
+        const ifadmnin  = emailchek.role === 'admin'
+        res.send({admin : ifadmnin})
+
+     } )
+
+      // user upload basis course show
+      app.get('/uploaded', verifyjwt, async(req,res)=> {
+        const email = req.query.email;
+        console.log(email , "decoded");
+        const decoded = req.decoded.email;
+        console.log(decoded, "decoded");
+        if(email === decoded){
+          console.log(email,decoded, "decoded get");
+
+          const query = {email:email}
+          const result = await courses.find(query).toArray()
+          res.send(result)
+        }
+        else{
+          res.status(403).send({message: "unaythorized access"})
+        }
+      } )
+
+
+
+      
+  
 
 
 
